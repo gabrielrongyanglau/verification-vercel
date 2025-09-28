@@ -1,16 +1,3 @@
-#!/usr/bin/env python3
-"""
-Minimal "Venting GPT" you can run in your terminal.
-
-New:
-  - Type `export_chat_history` at any time to save all user/assistant turns into a CSV named chat_history_YYYY-MM-DD_HHMM.csv in the current folder.
-
-Setup:
-  1) Copy .env.example to .env and paste your API key.
-  2) pip install -r requirements.txt
-  3) python main.py
-"""
-
 import os
 import csv
 from datetime import datetime
@@ -44,10 +31,10 @@ def respond(history):
     """
     try:
         resp = client.responses.create(
-            model="gpt-4o-mini",
+            model="gpt-4o",
             input=history,
             temperature=1.0,
-            max_output_tokens=200
+            max_output_tokens=300
         )
         return resp.output_text.strip()
     except Exception as e:
@@ -94,7 +81,7 @@ def export_chat_history(history) -> str:
 # --- NEW ---
 
 def main():
-    print("Venting GPT (type 'quit' to exit)\n")
+    print("Verification Task (type 'quit' to exit)\n")
     history = [
         {"role": "system", "content": SYSTEM}
     ]
@@ -114,14 +101,6 @@ def main():
         if user.lower() in {"quit", "exit"}:
             print("Goodbye!")
             break
-
-        # Pre-moderate
-        if moderate(user):
-            print("Gabriel: I hear you. I’m not able to go into that safely. "
-                  "If you’re in immediate danger, please contact local emergency services. "
-                  "If you’d like, I can share professional resources.\n")
-            # We do not add sensitive content to history
-            continue
 
         history.append({"role": "user", "content": user})
         assistant = respond(history)
